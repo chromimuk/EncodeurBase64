@@ -5,16 +5,24 @@ namespace EncodeurBase64
 {
     static class Base64
     {
-
+        
+        /// <summary>
+        /// Custom Convert.ToBase64String
+        /// </summary>
+        /// <param name="source">Array to encode</param>
+        /// <returns>Encoded string</returns>
         public static string Encode(byte[] source)
         {
+            // "Le tableau aura une longueur qui sera un multiple de 3 afin de simplifier le test"
+            if (source.Length % 3 != 0 || source.Length == 0)
+                throw new ArgumentException("Array size should be multiple of 3");
+            
             string binaryCode = ByteToBinary(source);
-            int[] numericValues = BinaryCodeToNumericValue(binaryCode);
-            string message = NumericValuesToMessage(numericValues);
+            int[] numericValues = BinaryCodeToNumericValues(binaryCode);
+            string encodedString = NumericValuesToEncodedString(numericValues);
 
-            return message;
+            return encodedString;
         }
-
 
 
         public static string ByteToBinary(byte[] source)
@@ -22,7 +30,7 @@ namespace EncodeurBase64
             StringBuilder builder = new StringBuilder();
             foreach (byte b in source)
             {
-                // PadLeft here is important, we need 8 digits 
+                // PadLeft here is important, we need 8 digits to form an octet 
                 builder.Append(Convert.ToString(b, 2).PadLeft(8, '0'));
             }
 
@@ -30,29 +38,25 @@ namespace EncodeurBase64
         }
 
 
-        public static int[] BinaryCodeToNumericValue(string binary)
+        public static int[] BinaryCodeToNumericValues(string binaryCode)
         {
             int groupSize = 6;
-            int[] numericValues = new int[binary.Length / groupSize];
+            int binaryCodeLength = binaryCode.Length;
+            int[] numericValues = new int[binaryCodeLength / groupSize];
 
-            int j = 0;
-            int binaryCodeLength = binary.Length;
-
-            for (int i = 0; i < binaryCodeLength; i += groupSize)
+            int index = 0;
+            for (int pos = 0; pos < binaryCodeLength; pos += groupSize)
             {
-                // if the code is smaller than 6 char.
-                // if (i + groupSize > binaryCodeLength) groupSize = binaryCodeLength - 1;
-
-                string bit = binary.Substring(i, groupSize);
-                numericValues[j] = Convert.ToInt32(bit, 2);
-                j++;
+                string bit = binaryCode.Substring(pos, groupSize);
+                numericValues[index] = Convert.ToInt32(bit, 2);
+                index++;
             }
 
             return numericValues;
         }
           
               
-        public static string NumericValuesToMessage(int[] numericValues)
+        public static string NumericValuesToEncodedString(int[] numericValues)
         {
             StringBuilder builder = new StringBuilder();
             foreach (var numVal in numericValues)
@@ -63,6 +67,7 @@ namespace EncodeurBase64
             return builder.ToString();
         }
         
+
 
         private static readonly char[] Base64Array = new char[] {
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
