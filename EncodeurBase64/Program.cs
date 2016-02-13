@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EncodeurBase64
+﻿namespace EncodeurBase64
 {
     class Program
     {
         static void Main(string[] args)
         {
+            byte[] source = { 0x6A, 0x77, 0xC4 };
+            System.Diagnostics.Debug.WriteLine(Base64.Encode(source));
         }
     }
 }
