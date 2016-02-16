@@ -32,6 +32,7 @@ namespace EncodeurBase64
             int sourceLength = source.Length;
             for (int i = 0; i < sourceLength; i++)
             {
+                // PadLeft here is important, we need 8 digits
                 builder.Append(Convert.ToString(source[i], 2).PadLeft(8, '0'));
             }
 
